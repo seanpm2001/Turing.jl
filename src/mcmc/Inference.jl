@@ -83,7 +83,7 @@ export InferenceAlgorithm,
     dot_observe,
     predict,
     isgibbscomponent,
-    externalsampler
+    getstate
 
 #######################
 # Sampler abstraction #
@@ -529,6 +529,22 @@ function AbstractMCMC.bundle_samples(
         end
         return merge(NamedTuple(zip(keys(sym_to_vns), vals)), metadata(t))
     end
+end
+
+"""
+    getstate(chain::MCMCChains.Chains)
+
+Retrieve the final sampler state saved in a chain, if it exists.
+"""
+function getstate(chain::MCMCChains.Chains)
+    if !haskey(chain.info, :samplerstate)
+        throw(
+            ArgumentError(
+                "The chain object does not contain the final state of the sampler. To save the state in the chain, pass the `save_state = true` keyword argument to `sample()`.",
+            ),
+        )
+    end
+    return chain.info[:samplerstate]
 end
 
 """
