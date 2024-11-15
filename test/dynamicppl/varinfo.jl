@@ -14,7 +14,11 @@ using Turing
     end
 
     function randr(
-        vi::DynamicPPL.VarInfo, vn::VarName, dist::Distribution, spl::DynamicPPL.Sampler, count::Bool=false
+        vi::DynamicPPL.VarInfo,
+        vn::VarName,
+        dist::Distribution,
+        spl::DynamicPPL.Sampler,
+        count::Bool=false,
     )
         if !haskey(vi, vn)
             r = rand(dist)
@@ -50,9 +54,9 @@ using Turing
         alg = HMC(0.1, 5)
         spl = DynamicPPL.Sampler(alg, model)
         v = copy(meta.vals)
-        DynamicPPL.link!(vi, spl)
+        DynamicPPL.link!!(vi, spl, model)
         @test all(x -> DynamicPPL.istrans(vi, x), meta.vns)
-        DynamicPPL.invlink!(vi, spl)
+        DynamicPPL.invlink!!(vi, spl, model)
         @test all(x -> !DynamicPPL.istrans(vi, x), meta.vns)
         @test meta.vals == v
 
@@ -64,10 +68,10 @@ using Turing
         @test all(x -> !DynamicPPL.istrans(vi, x), meta.m.vns)
         v_s = copy(meta.s.vals)
         v_m = copy(meta.m.vals)
-        DynamicPPL.link!(vi, spl)
+        DynamicPPL.link!!(vi, spl, model)
         @test all(x -> DynamicPPL.istrans(vi, x), meta.s.vns)
         @test all(x -> DynamicPPL.istrans(vi, x), meta.m.vns)
-        DynamicPPL.invlink!(vi, spl)
+        DynamicPPL.invlink!!(vi, spl, model)
         @test all(x -> !DynamicPPL.istrans(vi, x), meta.s.vns)
         @test all(x -> !DynamicPPL.istrans(vi, x), meta.m.vns)
         @test meta.s.vals == v_s
@@ -347,7 +351,7 @@ using Turing
 
         n = 10
         model = state_space(y, length(t))
-        @test size(sample(model, NUTS(; adtype=AutoReverseDiff(true)), n), 1) == n
+        @test size(sample(model, NUTS(; adtype=AutoReverseDiff(; compile=true)), n), 1) == n
     end
 
     if Threads.nthreads() > 1
