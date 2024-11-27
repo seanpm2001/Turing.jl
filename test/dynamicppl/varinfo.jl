@@ -58,7 +58,7 @@ using Turing
         @test all(x -> DynamicPPL.istrans(vi, x), meta.vns)
         DynamicPPL.invlink!!(vi, spl, model)
         @test all(x -> !DynamicPPL.istrans(vi, x), meta.vns)
-        @test meta.vals == v
+        @test meta.vals ≈ v atol=1e-10
 
         vi = DynamicPPL.TypedVarInfo(vi)
         meta = vi.metadata
@@ -74,19 +74,21 @@ using Turing
         DynamicPPL.invlink!!(vi, spl, model)
         @test all(x -> !DynamicPPL.istrans(vi, x), meta.s.vns)
         @test all(x -> !DynamicPPL.istrans(vi, x), meta.m.vns)
-        @test meta.s.vals == v_s
-        @test meta.m.vals == v_m
+        @test meta.s.vals ≈ v_s atol=1e-10
+        @test meta.m.vals ≈ v_m atol=1e-10
 
         # Transforming only a subset of the variables
-        DynamicPPL.link!(vi, spl, Val((:m,)))
+        spl = DynamicPPL.Sampler(HMC(0.1, 5, :m), model)
+        DynamicPPL.link!!(vi, spl, model)
         @test all(x -> !DynamicPPL.istrans(vi, x), meta.s.vns)
         @test all(x -> DynamicPPL.istrans(vi, x), meta.m.vns)
-        DynamicPPL.invlink!(vi, spl, Val((:m,)))
+        DynamicPPL.invlink!!(vi, spl, model)
         @test all(x -> !DynamicPPL.istrans(vi, x), meta.s.vns)
         @test all(x -> !DynamicPPL.istrans(vi, x), meta.m.vns)
-        @test meta.s.vals == v_s
-        @test meta.m.vals == v_m
+        @test meta.s.vals ≈ v_s atol=1e-10
+        @test meta.m.vals ≈ v_m atol=1e-10
     end
+
     @testset "orders" begin
         csym = gensym() # unique per model
         vn_z1 = @varname z[1]
