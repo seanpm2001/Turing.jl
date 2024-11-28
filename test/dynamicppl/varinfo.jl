@@ -58,7 +58,7 @@ using Turing
         @test all(x -> DynamicPPL.istrans(vi, x), meta.vns)
         DynamicPPL.invlink!!(vi, spl, model)
         @test all(x -> !DynamicPPL.istrans(vi, x), meta.vns)
-        @test meta.vals ≈ v atol=1e-10
+        @test meta.vals ≈ v atol = 1e-10
 
         vi = DynamicPPL.TypedVarInfo(vi)
         meta = vi.metadata
@@ -74,8 +74,8 @@ using Turing
         DynamicPPL.invlink!!(vi, spl, model)
         @test all(x -> !DynamicPPL.istrans(vi, x), meta.s.vns)
         @test all(x -> !DynamicPPL.istrans(vi, x), meta.m.vns)
-        @test meta.s.vals ≈ v_s atol=1e-10
-        @test meta.m.vals ≈ v_m atol=1e-10
+        @test meta.s.vals ≈ v_s atol = 1e-10
+        @test meta.m.vals ≈ v_m atol = 1e-10
 
         # Transforming only a subset of the variables
         spl = DynamicPPL.Sampler(HMC(0.1, 5, :m), model)
@@ -85,8 +85,8 @@ using Turing
         DynamicPPL.invlink!!(vi, spl, model)
         @test all(x -> !DynamicPPL.istrans(vi, x), meta.s.vns)
         @test all(x -> !DynamicPPL.istrans(vi, x), meta.m.vns)
-        @test meta.s.vals ≈ v_s atol=1e-10
-        @test meta.m.vals ≈ v_m atol=1e-10
+        @test meta.s.vals ≈ v_s atol = 1e-10
+        @test meta.m.vals ≈ v_m atol = 1e-10
     end
 
     @testset "orders" begin
